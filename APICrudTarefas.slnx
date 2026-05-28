@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="APICrudTarefas.Application/APICrudTarefas.Application.csproj" />
+  <Project Path="APICrudTarefas.Domain/APICrudTarefas.Domain.csproj" />
+  <Project Path="APICrudTarefas.Infrastructure/APICrudTarefas.Infrastructure.csproj" />
+  <Project Path="APICrudTarefas.Teste/APICrudTarefas.Teste.csproj" />
+  <Project Path="APICrudTarefas/APICrudTarefas.csproj" />
+</Solution>
