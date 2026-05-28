@@ -53,10 +53,15 @@ GET /api/tarefas?page=1&pageSize=10
 
 ## Banco de dados
 
-Tabela: Tarefas
+### Tabela: Tarefas
 
-## Observações
-
-- Projeto segue uma estrutura em camadas (API, Application, Domain e Infrastructure)
-- Consultas feitas com Dapper
-- Validações feitas com FluentValidation
+```sql
+CREATE TABLE Tarefas (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    Titulo NVARCHAR(100) NOT NULL,
+    Descricao NVARCHAR(MAX) NULL,
+    DataVencimento DATETIME2 NOT NULL,
+    Status INT NOT NULL,
+    Prioridade INT NOT NULL,
+    DataCriacao DATETIME2 NOT NULL
+);
