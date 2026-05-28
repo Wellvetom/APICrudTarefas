@@ -1,7 +1,9 @@
 ﻿using APICrudTarefas.Application.DTO.Request;
 using APICrudTarefas.Application.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+[Authorize]
 [ApiController]
 [Route("api/tarefas")]
 public class TarefasController : ControllerBase
@@ -50,6 +52,18 @@ public class TarefasController : ControllerBase
             await _tarefaService.ListarAsync(
                 pagina,
                 tamanhoPagina);
+
+        return Ok(resultado);
+    }
+
+    [HttpPost("importar-excel")]
+    public async Task<IActionResult> ImportarExcel(
+    IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("Arquivo inválido.");
+
+        var resultado = await _tarefaService.ImportarExcelAsync(file);
 
         return Ok(resultado);
     }

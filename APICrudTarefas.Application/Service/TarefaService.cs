@@ -1,13 +1,16 @@
-﻿using APICrudTarefas.Application.Interfaces;
-using APICrudTarefas.Domain.Entities;
-using APICrudTarefas.Application.DTO.Request;
+﻿using APICrudTarefas.Application.DTO.Request;
 using APICrudTarefas.Application.DTO.Response;
+using APICrudTarefas.Application.Interfaces;
+using APICrudTarefas.Domain.Entities;
+using APICrudTarefas.Domain.Enums;
+using APICrudTarefas.Domain.Exceptions;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using APICrudTarefas.Domain.Exceptions;
 
 namespace APICrudTarefas.Application.Service
 {
@@ -116,6 +119,98 @@ namespace APICrudTarefas.Application.Service
 
                 Dados = tarefas
             };
+        }
+        public async Task<ImportacaoTarefasResponse> ImportarExcelAsync(IFormFile file)
+        {
+            var response = new ImportacaoTarefasResponse();
+
+            using var stream = file.OpenReadStream();
+            using var workbook = new XLWorkbook(stream);
+
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RangeUsed().RowsUsed();
+
+            int linhaAtual = 1;
+
+            foreach (var row in rows.Skip(1)) // pula header
+            {
+                linhaAtual++;
+
+                try
+                {
+                    var titulo = row.Cell(1).GetString();
+                    var descricao = row.Cell(2).GetString();
+                    var dataVencimento = row.Cell(3).GetDateTime();
+                    var prioridadeTexto = row.Cell(4).GetString();
+
+                    // validações manuais (resiliência)
+                    if (string.IsNullOrWhiteSpace(titulo))
+                    {
+                        response.Erros.Add(new ErroImportacaoTarefa
+                        {
+                            Linha = linhaAtual,
+                            Titulo = titulo,
+                            Motivo = "Título obrigatório"
+                        });
+
+                        continue;
+                    }
+
+                    if (dataVencimento < DateTime.UtcNow.Date)
+                    {
+                        response.Erros.Add(new ErroImportacaoTarefa
+                        {
+                            Linha = linhaAtual,
+                            Titulo = titulo,
+                            Motivo = "Data de vencimento no passado"
+                        });
+
+                        continue;
+                    }
+
+                    if (!Enum.TryParse<PrioridadeTarefa>(prioridadeTexto, true, out var prioridade))
+                    {
+                        response.Erros.Add(new ErroImportacaoTarefa
+                        {
+                            Linha = linhaAtual,
+                            Titulo = titulo,
+                            Motivo = "Prioridade inválida"
+                        });
+
+                        continue;
+                    }
+
+                    var tarefa = new Tarefa
+                    {
+                        Id = Guid.NewGuid(),
+                        Titulo = titulo,
+                        Descricao = descricao,
+                        DataVencimento = dataVencimento,
+                        Status = StatusTarefa.Pendente,
+                        Prioridade = prioridade,
+                        DataCriacao = DateTime.UtcNow
+                    };
+
+                    await _repository.CriarAsync(tarefa);
+
+                    response.Sucesso++;
+                }
+                catch (Exception ex)
+                {
+                    response.Erros.Add(new ErroImportacaoTarefa
+                    {
+                        Linha = linhaAtual,
+                        Titulo = "N/A",
+                        Motivo = $"Erro inesperado: {ex.Message}"
+                    });
+                }
+
+                response.TotalProcessadas++;
+            }
+
+            response.Falhas = response.Erros.Count;
+
+            return response;
         }
     }
 }
