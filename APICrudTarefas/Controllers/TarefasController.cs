@@ -57,8 +57,7 @@ public class TarefasController : ControllerBase
     }
 
     [HttpPost("importar-excel")]
-    public async Task<IActionResult> ImportarExcel(
-    IFormFile file)
+    public async Task<IActionResult> ImportarExcel(IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("Arquivo inválido.");

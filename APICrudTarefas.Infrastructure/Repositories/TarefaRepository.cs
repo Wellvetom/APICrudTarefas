@@ -92,10 +92,7 @@ namespace APICrudTarefas.Infrastructure.Repositories
                 new { Id = id });
         }
 
-        public async Task<(IEnumerable<Tarefa> itens, int total)>
-            ListarAsync(
-                int pagina,
-                int tamanhoPagina)
+        public async Task<(IEnumerable<Tarefa> itens, int total)>ListarAsync(int pagina,int tamanhoPagina)
         {
             var offset = (pagina - 1) * tamanhoPagina;
 
