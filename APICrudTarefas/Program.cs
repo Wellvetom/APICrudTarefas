@@ -25,6 +25,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CriarTarefaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AtualizarTarefaValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+
+
 //Dapper
 builder.Services.AddScoped<DapperContext>();
 

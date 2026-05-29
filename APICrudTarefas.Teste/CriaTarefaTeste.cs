@@ -3,17 +3,17 @@ using APICrudTarefas.Application.DTO.Validations;
 using APICrudTarefas.Domain.Enums;
 using FluentValidation.TestHelper;
 
-public class CriarTarefaValidatorTests
+public class CriaTarefaTeste
 {
     private readonly CriarTarefaValidator _validator;
 
-    public CriarTarefaValidatorTests()
+    public CriaTarefaTeste()
     {
         _validator = new CriarTarefaValidator();
     }
 
     [Fact]
-    public void Deve_Falhar_Quando_Titulo_Eh_Vazio()
+    public void DeveFalharQuandoTituloEhVazio()
     {
         var model = new CriarTarefaRequest
         {
@@ -29,7 +29,7 @@ public class CriarTarefaValidatorTests
     }
 
     [Fact]
-    public void Deve_Falhar_Quando_Titulo_Maior_Que_100()
+    public void DeveFalharQuandoTituloMaiorQue100()
     {
         var model = new CriarTarefaRequest
         {
@@ -45,7 +45,7 @@ public class CriarTarefaValidatorTests
     }
 
     [Fact]
-    public void Deve_Falhar_Quando_DataVencimento_For_Passada()
+    public void DeveFalharQuandoDataVencimentoForPassada()
     {
         var model = new CriarTarefaRequest
         {
@@ -61,7 +61,7 @@ public class CriarTarefaValidatorTests
     }
 
     [Fact]
-    public void Deve_Passar_Quando_Modelo_Eh_Valido()
+    public void DevePassarQuandoModeloEhValido()
     {
         var model = new CriarTarefaRequest
         {

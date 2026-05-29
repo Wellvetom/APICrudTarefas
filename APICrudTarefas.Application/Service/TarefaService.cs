@@ -140,7 +140,6 @@ namespace APICrudTarefas.Application.Service
                 {
                     var titulo = row.Cell(1).GetString();
                     var descricao = row.Cell(2).GetString();
-                    var dataVencimento = row.Cell(3).GetDateTime();
                     var prioridadeTexto = row.Cell(4).GetString();
 
                     // validações manuais (resiliência)
@@ -151,6 +150,22 @@ namespace APICrudTarefas.Application.Service
                             Linha = linhaAtual,
                             Titulo = titulo,
                             Motivo = "Título obrigatório"
+                        });
+
+                        continue;
+                    }
+
+                    //trato a dado para saber se o datetime está vindo correto
+                    var cellData = row.Cell(3);
+                    DateTime dataVencimento;
+
+                    if (!cellData.TryGetValue<DateTime>(out dataVencimento))
+                    {
+                        response.Erros.Add(new ErroImportacaoTarefa
+                        {
+                            Linha = linhaAtual,
+                            Titulo = titulo,
+                            Motivo = "Data de vencimento inválida"
                         });
 
                         continue;
